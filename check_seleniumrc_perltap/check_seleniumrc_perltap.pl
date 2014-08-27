@@ -11,7 +11,7 @@ sub print_help ();
 sub print_usage ();
 
 
-my $PROGNAME = "check_selenium_perl";
+my $PROGNAME = "check_seleniumrc_perltap";
 my %ERRORS=('OK'=>0,'WARNING'=>1,'CRITICAL'=>2,'UNKNOWN'=>3,'DEPENDENT'=>4);
 
 
