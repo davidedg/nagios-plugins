@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 
 ## NAGIOS check for Azure SQL Backup Age
-## v:20220718.001
+## v:20220719.002
 ## a:Davide Del Grande
 #
 ## MINIMUM PERMISSIONS:
@@ -22,7 +22,6 @@
 # https://docs.microsoft.com/en-us/sql/relational-databases/system-catalog-views/sys-server-role-members-transact-sql?view=sql-server-ver16#b-azure-sql-database-listing-all-principals-sql-authentication-which-are-members-of-a-server-level-role
 
 
-
 [CmdletBinding(DefaultParameterSetName="CredsXML")]
 Param (
 	[Parameter(Mandatory)]
@@ -40,7 +39,7 @@ Param (
 	
 	[ValidateScript({$_ -gt 0})]
 	[int]
-	$QueryTimeout = 10,
+	$QueryTimeout = 6,
 
     [Parameter(ParameterSetName="CredsXML")]
 		# $Username = "sa"
@@ -71,7 +70,6 @@ Param (
 	[switch]
 	$InstallMissingPSModules
 )
-
 
 
 $NAG_OK = 0
@@ -182,20 +180,20 @@ if ($Backup_Age.TotalMinutes -lt 0) {
 $disp_minutes = [math]::Round($Backup_Age.TotalMinutes)
 
 $perfdata = "|"
-$perfdata += $(" backup_age=" + $disp_minutes + ";" + $WarnMinutes + ";" + $CritMinutes)
+$perfdata += $(" backup_age=" + $disp_minutes * 60 + "s;" + $WarnMinutes * 60 + ";" + $CritMinutes * 60)
 
 
 if ($Backup_Age.TotalMinutes -ge $CritMinutes) {
-	$output = "CRIT: Backup Age: " + $disp_minutes + " minute(s)"
+	$output = "CRIT: "
 	$exit_code = $NAG_CRIT
 } elseif ($Backup_Age.TotalMinutes -ge $WarnMinutes) {
-	$output = "WARN: Backup Age: " + $disp_minutes + " minute(s)"
+	$output = "WARN: "
 	$exit_code = $NAG_WARN
 } elseif ($Backup_Age.TotalMinutes -lt $WarnMinutes) {
-	$output = "Backup Age: " + $disp_minutes + " minute(s)"
+	$output = ""
 	$exit_code = $NAG_OK
 }
 
-
+$output += "[" + $SQLRES.name + "] - Backup Age: " + $disp_minutes + " minute(s)"
 Write-Host $output $perfdata
 exit $exit_code
