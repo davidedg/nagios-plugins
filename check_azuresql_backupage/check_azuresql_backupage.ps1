@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 
 ## NAGIOS check for Azure SQL Backup Age
-## v:20220719.002
+## v:20220718.001
 ## a:Davide Del Grande
 #
 ## MINIMUM PERMISSIONS:
@@ -22,6 +22,7 @@
 # https://docs.microsoft.com/en-us/sql/relational-databases/system-catalog-views/sys-server-role-members-transact-sql?view=sql-server-ver16#b-azure-sql-database-listing-all-principals-sql-authentication-which-are-members-of-a-server-level-role
 
 
+
 [CmdletBinding(DefaultParameterSetName="CredsXML")]
 Param (
 	[Parameter(Mandatory)]
@@ -39,7 +40,7 @@ Param (
 	
 	[ValidateScript({$_ -gt 0})]
 	[int]
-	$QueryTimeout = 6,
+	$QueryTimeout = 10,
 
     [Parameter(ParameterSetName="CredsXML")]
 		# $Username = "sa"
@@ -70,6 +71,7 @@ Param (
 	[switch]
 	$InstallMissingPSModules
 )
+
 
 
 $NAG_OK = 0
